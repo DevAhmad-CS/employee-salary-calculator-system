@@ -68,7 +68,7 @@ export class DeductionController {
    */
   getByEmployeeId = async (req: Request, res: Response): Promise<void> => {
     try {
-      const employeeId = parseInt(req.params.employeeId);
+      const employeeId = parseInt(String(req.params.employeeId), 10);
 
       if (isNaN(employeeId)) {
         res.status(400).json({
@@ -114,7 +114,7 @@ export class DeductionController {
    */
   getById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -214,7 +214,7 @@ export class DeductionController {
    */
   update = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -271,7 +271,7 @@ export class DeductionController {
    */
   delete = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({

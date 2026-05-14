@@ -68,7 +68,7 @@ export class BonusController {
    */
   getByEmployeeId = async (req: Request, res: Response): Promise<void> => {
     try {
-      const employeeId = parseInt(req.params.employeeId);
+      const employeeId = parseInt(String(req.params.employeeId), 10);
 
       if (isNaN(employeeId)) {
         res.status(400).json({
@@ -114,7 +114,7 @@ export class BonusController {
    */
   getById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -215,7 +215,7 @@ export class BonusController {
    */
   update = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -272,7 +272,7 @@ export class BonusController {
    */
   delete = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({

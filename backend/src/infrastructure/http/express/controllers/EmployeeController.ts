@@ -84,11 +84,14 @@ export class EmployeeController {
       const { search, department, status, page, limit } = req.query;
 
       const result = await this.getEmployeesUseCase.execute({
-        search: search as string | undefined,
-        department: department as string | undefined,
-        status: status as 'Active' | 'Inactive' | 'Terminated' | undefined,
-        page: page ? parseInt(page as string) : undefined,
-        limit: limit ? parseInt(limit as string) : undefined,
+        search: search !== undefined ? String(search) : undefined,
+        department: department !== undefined ? String(department) : undefined,
+        status:
+          status !== undefined
+            ? (String(status) as 'Active' | 'Inactive' | 'Terminated')
+            : undefined,
+        page: page !== undefined ? parseInt(String(page), 10) : undefined,
+        limit: limit !== undefined ? parseInt(String(limit), 10) : undefined,
       });
 
       res.status(200).json({
@@ -117,7 +120,7 @@ export class EmployeeController {
    */
   getById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -170,7 +173,7 @@ export class EmployeeController {
    */
   createAccount = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      const employeeId = parseInt(req.params.id);
+      const employeeId = parseInt(String(req.params.id), 10);
       if (isNaN(employeeId)) {
         res.status(400).json({
           success: false,
@@ -242,7 +245,7 @@ export class EmployeeController {
    */
   updateAccount = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      const employeeId = parseInt(req.params.id);
+      const employeeId = parseInt(String(req.params.id), 10);
       if (isNaN(employeeId)) {
         res.status(400).json({
           success: false,
@@ -384,7 +387,7 @@ export class EmployeeController {
    */
   update = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -453,7 +456,7 @@ export class EmployeeController {
    */
   delete = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({

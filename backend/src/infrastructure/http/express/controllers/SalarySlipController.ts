@@ -104,16 +104,16 @@ export class SalarySlipController {
       }
 
       const salarySlip = await this.generateSalarySlipUseCase.execute({
-        employeeId: parseInt(employeeId),
-        month: parseInt(month),
-        year: parseInt(year),
+        employeeId: parseInt(String(employeeId), 10),
+        month: parseInt(String(month), 10),
+        year: parseInt(String(year), 10),
         generatedBy,
       });
 
       // Send email notification to employee
       try {
         const employeeRepository = new EmployeeRepository();
-        const employee = await employeeRepository.findById(parseInt(employeeId));
+        const employee = await employeeRepository.findById(parseInt(String(employeeId), 10));
         
         if (employee && employee.email) {
           let emailService: EmailService | null = null;
@@ -127,8 +127,8 @@ export class SalarySlipController {
             await emailService.sendSalarySlipNotification({
               to: employee.email,
               fullName: employee.fullName,
-              month: parseInt(month),
-              year: parseInt(year),
+              month: parseInt(String(month), 10),
+              year: parseInt(String(year), 10),
               netSalary: salarySlip.netSalary,
               slipId: salarySlip.id,
             });
@@ -184,7 +184,7 @@ export class SalarySlipController {
    */
   getById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(String(req.params.id), 10);
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -230,7 +230,7 @@ export class SalarySlipController {
    */
   getByEmployeeId = async (req: Request, res: Response): Promise<void> => {
     try {
-      const employeeId = parseInt(req.params.employeeId);
+      const employeeId = parseInt(String(req.params.employeeId), 10);
 
       if (isNaN(employeeId)) {
         res.status(400).json({
@@ -269,8 +269,10 @@ export class SalarySlipController {
    */
   getByMonthYear = async (req: Request, res: Response): Promise<void> => {
     try {
-      const month = req.query.month ? parseInt(req.query.month as string) : undefined;
-      const year = req.query.year ? parseInt(req.query.year as string) : undefined;
+      const month =
+        req.query.month !== undefined ? parseInt(String(req.query.month), 10) : undefined;
+      const year =
+        req.query.year !== undefined ? parseInt(String(req.query.year), 10) : undefined;
 
       if (!month || !year) {
         res.status(400).json({
