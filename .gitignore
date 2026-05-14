@@ -33,4 +33,7 @@ documentation/
 !backend/package-lock.json
 !frontend/package-lock.json
 
+# Database: keep private dump out of Git; ship public schema + demo seed only
 DB/PostgreSQLDB.sql
+!DB/schema.sql
+!DB/demo_seed.sql

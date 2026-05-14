@@ -30,7 +30,7 @@ employee-salary-system/
 │   └── .env.example   # template for local configuration (safe to commit)
 ├── frontend/          # SPA (Vite + React)
 │   └── .env.example   # template for API base URL (safe to commit)
-├── DB/                # PostgreSQL dump for schema + setup (PostgreSQLDB.sql)
+├── DB/                # schema.sql (structure) + demo_seed.sql (safe demo data)
 └── documentation/     # Extended project documentation
 ```
 
@@ -46,13 +46,18 @@ employee-salary-system/
 ### Database
 
 1. Create a database (e.g. `employee_salary_system`).
-2. Load the dump (adjust paths as needed):
+2. Create tables from the public schema file, then load the safe demo dataset:
 
    ```bash
-   psql -U postgres -d employee_salary_system -f DB/PostgreSQLDB.sql
+   psql -U postgres -d employee_salary_system -f DB/schema.sql
+   psql -U postgres -d employee_salary_system -f DB/demo_seed.sql
    ```
 
-3. Copy `backend/.env.example` to `backend/.env` and set **`DB_*`** and other variables for your machine.
+   The original full database dump (`DB/PostgreSQLDB.sql`) is **not** part of the public repo—it may contain real data and is excluded for privacy. Use only `schema.sql` + `demo_seed.sql` for GitHub and live demos.
+
+3. **Demo logins** (password for all: **`Demo123!`**): `demo_admin`, `demo_hr`, `demo_accountant`, `demo_management`, `demo_employee`. Change or remove these in production.
+
+4. Copy `backend/.env.example` to `backend/.env` and set **`DB_*`** and other variables for your machine.
 
 ### Backend
 
