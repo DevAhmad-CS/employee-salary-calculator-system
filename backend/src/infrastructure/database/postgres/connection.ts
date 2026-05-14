@@ -25,30 +25,32 @@ dotenv.config();
 
 /**
  * Database connection configuration
- * 
- * Reads connection parameters from environment variables with fallback defaults.
- * All sensitive values (password, host, etc.) should be set in .env file.
- * 
+ *
+ * If `DATABASE_URL` is set (e.g. Neon), it is used as `connectionString` with SSL enabled.
+ * Otherwise uses `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` for local Postgres.
+ *
  * @constant {PoolConfig}
- * @property {string} host - Database server hostname (default: 'localhost')
- * @property {number} port - Database server port (default: 5432)
- * @property {string} database - Database name (default: 'employee_salary_system')
- * @property {string} user - Database username (default: 'postgres')
- * @property {string} password - Database password (must be set in .env)
- * @property {number} max - Maximum number of clients in the pool (default: 20)
- * @property {number} idleTimeoutMillis - Close idle clients after this many milliseconds (default: 30000)
- * @property {number} connectionTimeoutMillis - Return error after this many milliseconds if connection cannot be established (default: 2000)
  */
-const config: PoolConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'employee_salary_system',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '',
-  max: 20, // Maximum 20 concurrent connections
-  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-  connectionTimeoutMillis: 2000, // Fail connection attempts after 2 seconds
-};
+const databaseUrl = process.env.DATABASE_URL?.trim();
+
+const config: PoolConfig = databaseUrl
+  ? {
+      connectionString: databaseUrl,
+      ssl: { rejectUnauthorized: false },
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    }
+  : {
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432'),
+      database: process.env.DB_NAME || 'employee_salary_system',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || '',
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    };
 
 /**
  * PostgreSQL connection pool instance
