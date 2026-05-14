@@ -1,0 +1,88 @@
+/* Theme Toggle Button Styles */
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 2px solid #E2E8F0;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+  color: #2563EB;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.themeToggle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.themeToggle:hover {
+  border-color: #2563EB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.themeToggle:hover::before {
+  opacity: 0.1;
+}
+
+.themeToggle:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+  color: #2563EB;
+}
+
+.themeToggle:hover .icon {
+  transform: rotate(20deg) scale(1.1);
+  color: #1D4ED8;
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] .themeToggle {
+  border-color: #475569;
+  background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+  color: #60A5FA;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .themeToggle::before {
+  background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+}
+
+[data-theme="dark"] .themeToggle:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #334155 0%, #475569 100%);
+}
+
+[data-theme="dark"] .icon {
+  color: #60A5FA;
+}
+
+[data-theme="dark"] .themeToggle:hover .icon {
+  color: #93C5FD;
+}
+

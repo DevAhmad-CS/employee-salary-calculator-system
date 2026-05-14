@@ -1,0 +1,213 @@
+/* ============================================
+   HEADER STYLES
+   Unified Design - Matching Mockups
+   ============================================ */
+
+:global(:root) {
+  --sidebar-width: 260px;
+  --header-height: 70px;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--header-height);
+  background: linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 100%);
+  border-bottom: 2px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 100;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menuButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #1E40AF;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.menuButton:hover {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563EB;
+}
+
+.menuButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sidebarOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 250;
+  backdrop-filter: blur(2px);
+}
+
+.headerIcon {
+  color: #2563EB;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.headerTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1E40AF;
+  letter-spacing: -0.5px;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userIcon {
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  font-size: 14px;
+  color: #0F172A;
+  font-weight: 500;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  :global(:root) {
+    --header-height: 60px;
+  }
+
+  .header {
+    left: 0;
+    padding: 0 16px;
+    height: 60px;
+  }
+
+  .menuButton {
+    display: flex;
+  }
+
+  .headerTitle {
+    font-size: 20px;
+  }
+
+  .userInfo {
+    font-size: 12px;
+    padding: 6px 12px;
+    display: none;
+  }
+
+  .headerIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sidebarOverlay {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(:root) {
+    --header-height: 56px;
+  }
+
+  .header {
+    padding: 0 12px;
+    height: 56px;
+  }
+
+  .menuButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .menuButton svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .headerTitle {
+    font-size: 18px;
+  }
+}
+
+/* ============================================
+   DARK MODE STYLES
+   ============================================ */
+
+[data-theme="dark"] .header {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  border-bottom: 2px solid #475569;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .headerIcon {
+  color: #60A5FA;
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .headerTitle {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .userIcon {
+  color: #CBD5E1;
+}
+
+[data-theme="dark"] .userInfo {
+  color: #F8FAFC;
+  background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+  border: 1px solid #475569;
+}
+
+[data-theme="dark"] .menuButton {
+  color: #60A5FA;
+}
+
+[data-theme="dark"] .menuButton:hover {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93C5FD;
+}
+
+[data-theme="dark"] .sidebarOverlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+

@@ -1,0 +1,36 @@
+# Environment (never commit secrets)
+backend/.env
+frontend/.env
+.env
+.env.*
+!.env.example
+
+# Dependencies & build
+node_modules/
+dist/
+build/
+coverage/
+
+# Logs & tooling
+*.log
+.cursor/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Design / internal artifacts (excluded from this repo)
+mid/
+plan/
+
+# Local scratch / session notes (not for GitHub)
+_local_notes_not_for_github/
+
+documentation/
+
+!backend/package-lock.json
+!frontend/package-lock.json
+
+DB/PostgreSQLDB.sql
