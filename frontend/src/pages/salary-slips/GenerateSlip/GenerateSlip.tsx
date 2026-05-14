@@ -99,30 +99,35 @@ export default function GenerateSlip() {
         setEmployees(allEmployees);
       } catch (err: unknown) {
         console.error('Error fetching employees:', err);
+        const ax = err as {
+          message?: string;
+          code?: string;
+          response?: { status?: number; data?: { error?: string; message?: string } };
+        };
         console.error('Error details:', {
-          message: err.message,
-          response: err.response,
-          status: err.response?.status,
-          data: err.response?.data,
+          message: ax.message,
+          response: ax.response,
+          status: ax.response?.status,
+          data: ax.response?.data,
         });
-        
+
         let errorMessage = 'Failed to fetch employees';
-        
-        // Handle network errors
-        if (!err.response) {
-          if (err.code === 'ERR_NETWORK' || err.message.includes('Network Error')) {
+
+        if (!ax.response) {
+          const msg = ax.message ?? '';
+          if (ax.code === 'ERR_NETWORK' || msg.includes('Network Error')) {
             errorMessage = 'Cannot connect to server. Please check if the backend is running.';
-          } else if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+          } else if (ax.code === 'ECONNABORTED' || msg.includes('timeout')) {
             errorMessage = 'Request timeout. The server is taking too long to respond.';
           } else {
-            errorMessage = `Network error: ${err.message || 'Cannot connect to server'}`;
+            errorMessage = `Network error: ${msg || 'Cannot connect to server'}`;
           }
-        } else if (err.response) {
-          errorMessage = err.response.data?.error || err.response.data?.message || errorMessage;
-        } else if (err.message) {
-          errorMessage = err.message;
+        } else if (ax.response) {
+          errorMessage = ax.response.data?.error || ax.response.data?.message || errorMessage;
+        } else if (ax.message) {
+          errorMessage = ax.message;
         }
-        
+
         setError(errorMessage);
       } finally {
         setLoadingEmployees(false);

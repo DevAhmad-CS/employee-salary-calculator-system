@@ -10,7 +10,6 @@ import Sidebar from '../../components/layout/Sidebar/Sidebar';
 import Header from '../../components/layout/Header/Header';
 import { salarySlipService, type SalarySlip } from '../../services/api/salary-slips.service';
 import { reportsService } from '../../services/api/reports.service';
-import { getErrorMessage } from '../../utils/errorHandler';
 import styles from './Dashboard.module.css';
 
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',

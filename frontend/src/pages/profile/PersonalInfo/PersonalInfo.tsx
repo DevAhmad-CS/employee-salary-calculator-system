@@ -11,12 +11,10 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../../components/layout/Sidebar/Sidebar';
 import Header from '../../../components/layout/Header/Header';
 import { profileService, type Profile } from '../../../services/api/profile.service';
-import { useAuthStore } from '../../../services/state/authStore';
 import styles from './PersonalInfo.module.css';
 
 export default function PersonalInfo() {
   const navigate = useNavigate();
-  const { user: authUser } = useAuthStore();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string>('');

@@ -16,6 +16,7 @@ import { reportsService, type ReportType } from '../../../services/api/reports.s
 import { employeeService } from '../../../services/api/employee.service';
 import { useAuthStore } from '../../../services/state/authStore';
 import type { Employee } from '../../../services/api/employee.service';
+import { getApiErrorMessage } from '../../../utils/errorHandler';
 import styles from './GenerateReport.module.css';
 
 // Month names for display
@@ -64,7 +65,7 @@ export default function GenerateReport() {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loadingEmployees, setLoadingEmployees] = useState(false);
+  const [, setLoadingEmployees] = useState(false);
   const [employeeSearch, setEmployeeSearch] = useState<string>('');
   const [employeeSearchAnnual, setEmployeeSearchAnnual] = useState<string>('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
@@ -115,7 +116,7 @@ export default function GenerateReport() {
       }
     } catch (err: unknown) {
       console.error('Error generating monthly report:', err);
-      setError(err.message || (err as { response?: { data?: { error?: string } } })?.response?.data?.error || (err instanceof Error ? err.message : 'Unknown error') || 'Failed to generate monthly report');
+      setError(getApiErrorMessage(err) || 'Failed to generate monthly report');
     } finally {
       setLoading(false);
     }
@@ -144,7 +145,7 @@ export default function GenerateReport() {
       }
     } catch (err: unknown) {
       console.error('Error generating annual report:', err);
-      setError(err.message || (err as { response?: { data?: { error?: string } } })?.response?.data?.error || (err instanceof Error ? err.message : 'Unknown error') || 'Failed to generate annual report');
+      setError(getApiErrorMessage(err) || 'Failed to generate annual report');
     } finally {
       setLoading(false);
     }

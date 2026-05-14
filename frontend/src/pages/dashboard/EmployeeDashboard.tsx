@@ -12,7 +12,6 @@ import { profileService } from '../../services/api/profile.service';
 import { employeeService, type Employee } from '../../services/api/employee.service';
 import { salarySlipService, type SalarySlip } from '../../services/api/salary-slips.service';
 import { useAuthStore } from '../../services/state/authStore';
-import { getErrorMessage } from '../../utils/errorHandler';
 import styles from './Dashboard.module.css';
 
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -62,7 +61,8 @@ export default function EmployeeDashboard() {
           .slice(0, 6); // Last 6 slips
         setSlips(sortedSlips);
       } catch (err: unknown) {
-        const errorMessage = getErrorMessage(err, 'Failed to fetch employee data');
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to fetch employee data';
         setError(errorMessage);
       } finally {
         setLoading(false);

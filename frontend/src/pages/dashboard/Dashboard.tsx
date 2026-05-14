@@ -1,15 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar/Sidebar';
 import Header from '../../components/layout/Header/Header';
 import { dashboardService, type DashboardStatistics } from '../../services/api/dashboard.service';
-import { salarySlipService, type SalarySlip } from '../../services/api/salary-slips.service';
-import { employeeService, type Employee } from '../../services/api/employee.service';
+import { salarySlipService } from '../../services/api/salary-slips.service';
+import { employeeService } from '../../services/api/employee.service';
 import { reportsService } from '../../services/api/reports.service';
-import { profileService } from '../../services/api/profile.service';
 import { userService, type User } from '../../services/api/user.service';
 import { useAuthStore } from '../../services/state/authStore';
-import { getErrorMessage } from '../../utils/errorHandler';
 import styles from './Dashboard.module.css';
 
 /**
@@ -35,7 +33,7 @@ interface RecentActivity {
   type: 'salary-slip' | 'employee' | 'report';
   text: string;
   time: string;
-  icon: JSX.Element;
+  icon: ReactNode;
 }
 
 import EmployeeDashboard from './EmployeeDashboard';
@@ -79,7 +77,8 @@ export default function Dashboard() {
           setError(response.error || 'Failed to fetch dashboard statistics');
         }
       } catch (err: unknown) {
-        const errorMessage = getErrorMessage(err, 'Failed to fetch dashboard statistics');
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to fetch dashboard statistics';
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -291,13 +290,9 @@ export default function Dashboard() {
           const reportsResponse = await reportsService.getHistory({ type: 'monthly' });
           if (reportsResponse.success && reportsResponse.data && reportsResponse.data.length > 0) {
             const latestReport = reportsResponse.data[0];
-            const generatedByName = latestReport.generatedBy ? await getUserName(latestReport.generatedBy) : null;
-            
-            let reportText = 'Monthly report generated';
-            if (generatedByName) {
-              reportText = `${generatedByName} generated a monthly report`;
-            }
-            
+            const reportText =
+              latestReport.type === 'annual' ? 'Annual report generated' : 'Monthly report generated';
+
             activities.push({
               type: 'report',
               text: reportText,

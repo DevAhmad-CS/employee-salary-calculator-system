@@ -54,7 +54,7 @@ export interface Employee {
   userAccount?: {
     id: number;
     username: string;
-    role: 'Admin' | 'Accountant' | 'Employee' | 'Management';
+    role: 'Admin' | 'HR' | 'Accountant' | 'Employee' | 'Management';
   } | null;
   createdAt: Date;
   updatedAt: Date;
@@ -111,7 +111,7 @@ export interface CreateEmployeeAccountResponse {
     user: {
       id: number;
       username: string;
-      role: 'Admin' | 'Accountant' | 'Employee' | 'Management';
+      role: 'Admin' | 'HR' | 'Accountant' | 'Employee' | 'Management';
       employeeId?: number | null;
       createdAt?: Date;
       updatedAt?: Date;
@@ -124,7 +124,7 @@ export interface CreateEmployeeAccountResponse {
 export interface UpdateEmployeeAccountRequest {
   username?: string;
   password?: string;
-  role?: 'Admin' | 'Accountant' | 'Employee' | 'Management';
+  role?: 'Admin' | 'HR' | 'Accountant' | 'Employee' | 'Management';
   email?: string | null;
 }
 
@@ -134,7 +134,7 @@ export interface UpdateEmployeeAccountResponse {
     user: {
       id: number;
       username: string;
-      role: 'Admin' | 'Accountant' | 'Employee' | 'Management';
+      role: 'Admin' | 'HR' | 'Accountant' | 'Employee' | 'Management';
       employeeId?: number | null;
       createdAt?: Date;
       updatedAt?: Date;

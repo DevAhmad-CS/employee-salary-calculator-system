@@ -248,7 +248,7 @@ export default function AccountSettings() {
     }
   };
 
-  const onSubmit = async (data: AccountSettingsFormData) => {
+  const onSubmit = async (_data: AccountSettingsFormData) => {
     try {
       setLoading(true);
       setError('');

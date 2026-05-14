@@ -140,7 +140,11 @@ class ReportsService {
       }
     } catch (error: unknown) {
       console.error('Error generating report:', error);
-      throw new Error((error as { response?: { data?: { error?: string } } })?.response?.data?.error || (error instanceof Error ? error.message : 'Unknown error') || error.message || 'Failed to generate report');
+      const apiErr = error as { response?: { data?: { error?: string } } };
+      throw new Error(
+        apiErr.response?.data?.error ||
+          (error instanceof Error ? error.message : 'Failed to generate report')
+      );
     }
   }
 

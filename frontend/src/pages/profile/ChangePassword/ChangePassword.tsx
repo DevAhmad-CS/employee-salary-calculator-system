@@ -65,7 +65,7 @@ export default function ChangePassword() {
         setError(response.error || 'Failed to change password');
       }
     } catch (err: unknown) {
-      setError(err.message || 'Failed to change password');
+      setError(err instanceof Error ? err.message : 'Failed to change password');
     } finally {
       setLoading(false);
     }
