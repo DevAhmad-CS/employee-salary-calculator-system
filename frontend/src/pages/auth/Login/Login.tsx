@@ -16,6 +16,16 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+const DEMO_PASSWORD = 'Demo123!';
+
+const DEMO_ACCOUNTS: { role: string; username: string }[] = [
+  { role: 'Admin', username: 'demo_admin' },
+  { role: 'HR', username: 'demo_hr' },
+  { role: 'Accountant', username: 'demo_accountant' },
+  { role: 'Management', username: 'demo_management' },
+  { role: 'Employee', username: 'demo_employee' },
+];
+
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
@@ -25,10 +35,16 @@ export default function Login() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  const fillDemoAccount = (username: string) => {
+    setValue('username', username, { shouldValidate: true });
+    setValue('password', DEMO_PASSWORD, { shouldValidate: true });
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -68,7 +84,8 @@ export default function Login() {
 
       {/* Main Login Form */}
       <main className={styles.loginMain}>
-        <div className={styles.loginCard}>
+        <div className={styles.loginLayout}>
+          <div className={styles.loginCard}>
           {/* Page Title */}
           <h2 className={styles.loginTitle}>Login</h2>
 
@@ -154,6 +171,29 @@ export default function Login() {
               </button>
             </div>
           </form>
+        </div>
+
+        <aside className={styles.demoCard} aria-label="Demo accounts">
+          <h3 className={styles.demoTitle}>Demo Accounts</h3>
+          <p className={styles.demoNote}>Use any demo account to explore the system.</p>
+          <p className={styles.demoPasswordHint}>
+            Password for all: <span className={styles.demoPasswordValue}>Demo123!</span>
+          </p>
+          <ul className={styles.demoList}>
+            {DEMO_ACCOUNTS.map(({ role, username }) => (
+              <li key={username} className={styles.demoListItem}>
+                <span className={styles.demoRole}>{role}</span>
+                <button
+                  type="button"
+                  className={styles.demoUsernameBtn}
+                  onClick={() => fillDemoAccount(username)}
+                >
+                  {username}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </aside>
         </div>
       </main>
     </div>
