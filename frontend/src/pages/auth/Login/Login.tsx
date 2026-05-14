@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,11 +26,149 @@ const DEMO_ACCOUNTS: { role: string; username: string }[] = [
   { role: 'Employee', username: 'demo_employee' },
 ];
 
+const PING_TIMEOUT_MS = 12_000;
+const RETRY_INTERVAL_MS = 5_000;
+const LONG_WAIT_AFTER_MS = 60_000;
+
+/** Root origin for wake-up ping (strips trailing /api from VITE_API_URL). */
+function getBackendWakePingUrl(): string | null {
+  const raw = import.meta.env.VITE_API_URL;
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  let base = raw.trim().replace(/\/+$/, '');
+  if (base.toLowerCase().endsWith('/api')) {
+    base = base.slice(0, -4);
+  }
+  return base || null;
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
+
+  const wakePingUrl = getBackendWakePingUrl();
+  const [wakeReady, setWakeReady] = useState(false);
+  const [wakeDismissed, setWakeDismissed] = useState(false);
+  const [wakeLongWait, setWakeLongWait] = useState(false);
+  const [wakePinging, setWakePinging] = useState(false);
+  const [wakeLongWaitReset, setWakeLongWaitReset] = useState(0);
+  const wakeReadyRef = useRef(false);
+  const wakeDismissedRef = useRef(false);
+  const wakeRetryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showWakeOverlay = Boolean(wakePingUrl) && !wakeReady && !wakeDismissed;
+
+  const pingBackendOnce = useCallback(async (): Promise<boolean> => {
+    const url = wakePingUrl;
+    if (!url) return true;
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), PING_TIMEOUT_MS);
+    try {
+      await fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      return true;
+    } catch {
+      const c2 = new AbortController();
+      const t2 = window.setTimeout(() => c2.abort(), PING_TIMEOUT_MS);
+      try {
+        await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store', signal: c2.signal });
+        return true;
+      } catch {
+        return false;
+      } finally {
+        window.clearTimeout(t2);
+      }
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
+  }, [wakePingUrl]);
+
+  const clearWakeRetry = useCallback(() => {
+    if (wakeRetryRef.current !== null) {
+      window.clearTimeout(wakeRetryRef.current);
+      wakeRetryRef.current = null;
+    }
+  }, []);
+
+  const runWakeCycle = useCallback(() => {
+    const url = wakePingUrl;
+    if (!url || wakeDismissedRef.current || wakeReadyRef.current) return;
+
+    const step = async () => {
+      if (wakeDismissedRef.current || wakeReadyRef.current) return;
+      setWakePinging(true);
+      const ok = await pingBackendOnce();
+      setWakePinging(false);
+      if (wakeDismissedRef.current) return;
+      if (ok) {
+        wakeReadyRef.current = true;
+        setWakeReady(true);
+        clearWakeRetry();
+        return;
+      }
+      wakeRetryRef.current = window.setTimeout(step, RETRY_INTERVAL_MS);
+    };
+
+    clearWakeRetry();
+    void step();
+  }, [wakePingUrl, pingBackendOnce, clearWakeRetry]);
+
+  useEffect(() => {
+    wakeDismissedRef.current = wakeDismissed;
+  }, [wakeDismissed]);
+
+  useEffect(() => {
+    if (wakeReady) wakeReadyRef.current = true;
+  }, [wakeReady]);
+
+  useEffect(() => {
+    if (!wakePingUrl) return;
+
+    runWakeCycle();
+
+    return () => {
+      clearWakeRetry();
+    };
+  }, [wakePingUrl, runWakeCycle, clearWakeRetry]);
+
+  useEffect(() => {
+    if (!showWakeOverlay) {
+      setWakeLongWait(false);
+      return;
+    }
+    setWakeLongWait(false);
+    const id = window.setTimeout(() => setWakeLongWait(true), LONG_WAIT_AFTER_MS);
+    return () => window.clearTimeout(id);
+  }, [showWakeOverlay, wakePingUrl, wakeLongWaitReset]);
+
+  const handleWakeTryAgain = () => {
+    if (!wakePingUrl || wakeReadyRef.current) return;
+    setWakeLongWaitReset((n) => n + 1);
+    clearWakeRetry();
+    setWakePinging(true);
+    void (async () => {
+      const ok = await pingBackendOnce();
+      setWakePinging(false);
+      if (wakeDismissedRef.current) return;
+      if (ok) {
+        wakeReadyRef.current = true;
+        setWakeReady(true);
+        return;
+      }
+      wakeRetryRef.current = window.setTimeout(() => runWakeCycle(), RETRY_INTERVAL_MS);
+    })();
+  };
+
+  const handleWakeContinue = () => {
+    wakeDismissedRef.current = true;
+    setWakeDismissed(true);
+    clearWakeRetry();
+  };
 
   const {
     register,
@@ -64,6 +202,51 @@ export default function Login() {
 
   return (
     <div className={styles.loginContainer}>
+      {showWakeOverlay && (
+        <div
+          className={styles.wakeOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="wake-title"
+          aria-describedby="wake-desc"
+        >
+          <div className={styles.wakeCard}>
+            <div className={styles.wakeSpinner} aria-hidden />
+            <h2 id="wake-title" className={styles.wakeTitle}>
+              Starting the demo server...
+            </h2>
+            <p id="wake-desc" className={styles.wakeText}>
+              This may take 30–60 seconds on the first visit because the backend is hosted on a free
+              instance.
+            </p>
+            {wakeLongWait && (
+              <p className={styles.wakeTextSecondary}>
+                The server is still waking up. This may take a little longer on free hosting.
+              </p>
+            )}
+            {wakePinging && (
+              <p className={styles.wakeStatus}>Connecting...</p>
+            )}
+            <div className={styles.wakeActions}>
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnSecondary}`}
+                onClick={handleWakeTryAgain}
+              >
+                Try again
+              </button>
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={handleWakeContinue}
+              >
+                Continue anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header Section */}
       <header className={styles.loginHeader}>
         <div className={styles.loginLogo}>
