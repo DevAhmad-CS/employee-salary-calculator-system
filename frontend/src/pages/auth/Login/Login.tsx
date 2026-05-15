@@ -49,15 +49,12 @@ export default function Login() {
 
   const wakePingUrl = getBackendWakePingUrl();
   const [wakeReady, setWakeReady] = useState(false);
-  const [wakeDismissed, setWakeDismissed] = useState(false);
   const [wakeLongWait, setWakeLongWait] = useState(false);
   const [wakePinging, setWakePinging] = useState(false);
-  const [wakeLongWaitReset, setWakeLongWaitReset] = useState(0);
   const wakeReadyRef = useRef(false);
-  const wakeDismissedRef = useRef(false);
   const wakeRetryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showWakeOverlay = Boolean(wakePingUrl) && !wakeReady && !wakeDismissed;
+  const showWakeOverlay = Boolean(wakePingUrl) && !wakeReady;
 
   const pingBackendOnce = useCallback(async (): Promise<boolean> => {
     const url = wakePingUrl;
@@ -97,14 +94,13 @@ export default function Login() {
 
   const runWakeCycle = useCallback(() => {
     const url = wakePingUrl;
-    if (!url || wakeDismissedRef.current || wakeReadyRef.current) return;
+    if (!url || wakeReadyRef.current) return;
 
     const step = async () => {
-      if (wakeDismissedRef.current || wakeReadyRef.current) return;
+      if (wakeReadyRef.current) return;
       setWakePinging(true);
       const ok = await pingBackendOnce();
       setWakePinging(false);
-      if (wakeDismissedRef.current) return;
       if (ok) {
         wakeReadyRef.current = true;
         setWakeReady(true);
@@ -117,10 +113,6 @@ export default function Login() {
     clearWakeRetry();
     void step();
   }, [wakePingUrl, pingBackendOnce, clearWakeRetry]);
-
-  useEffect(() => {
-    wakeDismissedRef.current = wakeDismissed;
-  }, [wakeDismissed]);
 
   useEffect(() => {
     if (wakeReady) wakeReadyRef.current = true;
@@ -144,31 +136,7 @@ export default function Login() {
     setWakeLongWait(false);
     const id = window.setTimeout(() => setWakeLongWait(true), LONG_WAIT_AFTER_MS);
     return () => window.clearTimeout(id);
-  }, [showWakeOverlay, wakePingUrl, wakeLongWaitReset]);
-
-  const handleWakeTryAgain = () => {
-    if (!wakePingUrl || wakeReadyRef.current) return;
-    setWakeLongWaitReset((n) => n + 1);
-    clearWakeRetry();
-    setWakePinging(true);
-    void (async () => {
-      const ok = await pingBackendOnce();
-      setWakePinging(false);
-      if (wakeDismissedRef.current) return;
-      if (ok) {
-        wakeReadyRef.current = true;
-        setWakeReady(true);
-        return;
-      }
-      wakeRetryRef.current = window.setTimeout(() => runWakeCycle(), RETRY_INTERVAL_MS);
-    })();
-  };
-
-  const handleWakeContinue = () => {
-    wakeDismissedRef.current = true;
-    setWakeDismissed(true);
-    clearWakeRetry();
-  };
+  }, [showWakeOverlay, wakePingUrl]);
 
   const {
     register,
@@ -220,29 +188,13 @@ export default function Login() {
               instance.
             </p>
             {wakeLongWait && (
-              <p className={styles.wakeTextSecondary}>
-                The server is still waking up. This may take a little longer on free hosting.
+              <p className={styles.wakeTextSecondary} role="status" aria-live="polite">
+                The server is still waking up. Please keep this page open.
               </p>
             )}
             {wakePinging && (
               <p className={styles.wakeStatus}>Connecting...</p>
             )}
-            <div className={styles.wakeActions}>
-              <button
-                type="button"
-                className={`${styles.btn} ${styles.btnSecondary}`}
-                onClick={handleWakeTryAgain}
-              >
-                Try again
-              </button>
-              <button
-                type="button"
-                className={`${styles.btn} ${styles.btnPrimary}`}
-                onClick={handleWakeContinue}
-              >
-                Continue anyway
-              </button>
-            </div>
           </div>
         </div>
       )}

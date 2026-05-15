@@ -444,53 +444,10 @@
 }
 
 .wakeStatus {
-  margin: 0 0 20px;
+  margin: 0;
   font-size: 13px;
   color: #2563EB;
   font-weight: 500;
-}
-
-.wakeActions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.wakeActions .btn {
-  min-height: 44px;
-}
-
-@media (max-width: 479px) {
-  .wakeActions .btn {
-    width: 100%;
-  }
-}
-
-@media (min-width: 480px) {
-  .wakeActions {
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-}
-
-.btnSecondary {
-  background: #FFFFFF;
-  color: #2563EB;
-  border: 2px solid #2563EB;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
-}
-
-.btnSecondary:hover:not(:disabled) {
-  background: #EFF6FF;
-  border-color: #1D4ED8;
-  color: #1D4ED8;
-}
-
-.btnSecondary:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 
 @media (min-width: 480px) {
@@ -961,18 +918,6 @@
 }
 
 [data-theme="dark"] .wakeStatus {
-  color: #93C5FD;
-}
-
-[data-theme="dark"] .btnSecondary {
-  background: #0F172A;
-  color: #60A5FA;
-  border-color: #60A5FA;
-}
-
-[data-theme="dark"] .btnSecondary:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: #93C5FD;
   color: #93C5FD;
 }
 
